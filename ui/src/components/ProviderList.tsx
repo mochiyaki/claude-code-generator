@@ -7,9 +7,10 @@ interface ProviderListProps {
   providers: Provider[];
   onEdit: (index: number) => void;
   onRemove: (index: number) => void;
+  onSelect?: (index: number) => void;
 }
 
-export function ProviderList({ providers, onEdit, onRemove }: ProviderListProps) {
+export function ProviderList({ providers, onEdit, onRemove, onSelect }: ProviderListProps) {
   // Handle case where providers might be null or undefined
   if (!providers || !Array.isArray(providers)) {
     return (
@@ -54,7 +55,11 @@ export function ProviderList({ providers, onEdit, onRemove }: ProviderListProps)
         const models = Array.isArray(provider.models) ? provider.models : [];
 
         return (
-          <div key={index} className="flex items-start justify-between rounded-md border bg-white p-4 transition-all hover:shadow-md animate-slide-in hover:scale-[1.01]">
+          <div
+            key={index}
+            className="flex items-start justify-between rounded-md border bg-white p-4 transition-all hover:shadow-md animate-slide-in hover:scale-[1.01] cursor-pointer"
+            onClick={() => onSelect && onSelect(index)}
+          >
             <div className="flex-1 space-y-1.5">
               <p className="text-md font-semibold text-gray-800">{providerName}</p>
               <p className="text-sm text-gray-500">{apiBaseUrl}</p>
@@ -68,10 +73,10 @@ export function ProviderList({ providers, onEdit, onRemove }: ProviderListProps)
               </div>
             </div>
             <div className="ml-4 flex flex-shrink-0 items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={() => onEdit(index)} className="transition-all-ease hover:scale-110">
+              <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); onEdit(index); }} className="transition-all-ease hover:scale-110">
                 <Pencil className="h-4 w-4" />
               </Button>
-              <Button variant="destructive" size="icon" onClick={() => onRemove(index)} className="transition-all duration-200 hover:scale-110">
+              <Button variant="destructive" size="icon" onClick={(e) => { e.stopPropagation(); onRemove(index); }} className="transition-all duration-200 hover:scale-110">
                 <Trash2 className="h-4 w-4 text-current transition-colors duration-200" />
               </Button>
             </div>

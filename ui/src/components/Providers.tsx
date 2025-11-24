@@ -19,9 +19,9 @@ import { Badge } from "@/components/ui/badge";
 import { Combobox } from "@/components/ui/combobox";
 import { ComboInput } from "@/components/ui/combo-input";
 import { api } from "@/lib/api";
-import type { Provider } from "@/types";
+import type { Provider, RouterConfig } from "@/types";
 
-interface ProviderType extends Provider {}
+type ProviderType = Provider;
 
 export function Providers() {
   const { t } = useTranslation();
@@ -518,6 +518,41 @@ export function Providers() {
     return false;
   });
 
+  const applyProviderToRouters = (filteredIndex: number) => {
+    const provider = filteredProviders[filteredIndex];
+    if (!provider || !provider.name) return;
+    const providerName = provider.name;
+    const models = Array.isArray(provider.models) ? provider.models : [];
+    const firstModel = models.length > 0 ? models[0] : "";
+
+    const defaultRouter: RouterConfig = {
+      default: "",
+      background: "",
+      think: "",
+      longContext: "",
+      longContextThreshold: 60000,
+      webSearch: "",
+      image: "",
+    };
+    const currentRouter: RouterConfig = config.Router ?? defaultRouter;
+
+    const fields: (keyof Omit<RouterConfig, "longContextThreshold" | "custom">)[] = [
+      "default",
+      "background",
+      "think",
+      "longContext",
+      "webSearch",
+      "image",
+    ];
+
+    const newRouter: RouterConfig = { ...currentRouter };
+    for (const field of fields) {
+      newRouter[field] = firstModel ? `${providerName},${firstModel}` : "";
+    }
+
+    setConfig({ ...config, Router: newRouter });
+  };
+
   return (
     <Card className="flex h-full flex-col rounded-lg border shadow-sm">
       <CardHeader className="flex flex-col border-b p-4 gap-3">
@@ -551,6 +586,7 @@ export function Providers() {
           providers={filteredProviders}
           onEdit={handleEditProvider}
           onRemove={handleSetDeletingProviderIndex}
+          onSelect={applyProviderToRouters}
         />
       </CardContent>
 
