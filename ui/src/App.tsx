@@ -10,7 +10,7 @@ import { LogViewer } from "@/components/LogViewer";
 import { Button } from "@/components/ui/button";
 import { useConfig } from "@/components/ConfigProvider";
 import { api } from "@/lib/api";
-import { Settings, Languages, Save, RefreshCw, FileJson, CircleArrowUp, FileText } from "lucide-react";
+import { Settings, Languages, Save, RefreshCw, FileJson, CircleArrowUp, FileText, Sun, Moon } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -43,6 +43,28 @@ function App() {
   const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
   const [hasCheckedUpdate, setHasCheckedUpdate] = useState(false);
   const hasAutoCheckedUpdate = useRef(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const toggleTheme = useCallback(() => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  }, []);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('theme');
+    const initial = saved === 'dark' || saved === 'light'
+      ? (saved as 'light' | 'dark')
+      : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    setTheme(initial);
+  }, []);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   const saveConfig = async () => {
     // Handle case where config might be null or undefined
@@ -268,9 +290,9 @@ function App() {
   }
 
   return (
-    <div className="h-screen bg-gray-50 font-sans">
-      <header className="flex h-16 items-center justify-between border-b bg-white px-6">
-        <h1 className="text-xl font-semibold text-gray-800">{t('app.title')}</h1>
+    <div className="h-screen font-sans bg-background text-foreground">
+      <header className="flex h-16 items-center justify-between border-b bg-card px-6">
+        <h1 className="text-xl font-semibold">{t('app.title')}</h1>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => setIsSettingsOpen(true)} className="transition-all-ease hover:scale-110">
             <Settings className="h-5 w-5" />
@@ -303,9 +325,26 @@ function App() {
                 >
                   中文
                 </Button>
+                <Button
+                  variant={i18n.language.startsWith('sp') ? 'default' : 'ghost'}
+                  className="w-full justify-start transition-all-ease hover:scale-[1.02]"
+                  onClick={() => i18n.changeLanguage('sp')}
+                >
+                  Español
+                </Button>
+                <Button
+                  variant={i18n.language.startsWith('jp') ? 'default' : 'ghost'}
+                  className="w-full justify-start transition-all-ease hover:scale-[1.02]"
+                  onClick={() => i18n.changeLanguage('jp')}
+                >
+                  日本語
+                </Button>
               </div>
             </PopoverContent>
           </Popover>
+          <Button variant="ghost" size="icon" onClick={toggleTheme} className="transition-all-ease hover:scale-110">
+            {theme === 'dark' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+          </Button>
           {/* 更新版本按钮 */}
           <Button 
             variant="ghost" 

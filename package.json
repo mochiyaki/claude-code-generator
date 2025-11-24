@@ -1,6 +1,6 @@
 {
   "name": "@gguf/claude-code-generator",
-  "version": "1.0.8",
+  "version": "1.1.1",
   "description": "Use Claude Code without an Anthropics account and route it to custom server(s)",
   "bin": {
     "ccg": "dist/cli.js"

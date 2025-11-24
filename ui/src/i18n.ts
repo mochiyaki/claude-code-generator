@@ -4,6 +4,8 @@ import LanguageDetector from "i18next-browser-languagedetector";
 
 import en from "./locales/en.json";
 import zh from "./locales/zh.json";
+import sp from "./locales/sp.json";
+import jp from "./locales/jp.json";
 
 const resources = {
   en: {
@@ -11,6 +13,12 @@ const resources = {
   },
   zh: {
     translation: zh,
+  },
+  sp: {
+    translation: sp,
+  },
+  jp: {
+    translation: jp,
   },
 };
 
